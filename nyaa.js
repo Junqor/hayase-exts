@@ -32,17 +32,32 @@ var nyaa_default = new class Nyaa {
       return data.data;
     }));
     try {
-      const torrentResults = torrents.flat().map((item) => ({
-        title: item.title || "Unknown",
-        link: item.magnet || item.torrent || item.link || "",
-        hash: item.hash || "",
-        seeders: Number(item.seeders) || 0,
-        leechers: Number(item.leechers) || 0,
-        downloads: Number(item.downloads) || 0,
-        size: Number(item.size) || 0,
-        date: item.time ? new Date(item.time) : new Date(0),
-        accuracy: item.accuracy || "low"
-      }));
+      const torrentResults = torrents.flat().map((item) => {
+        let hash = "";
+        try {
+          const url = new URL(item.magnet);
+          if (url.protocol !== "magnet:")
+            throw new Error;
+          const xtValues = url.searchParams.getAll("xt");
+          for (const xt of xtValues) {
+            const match = xt.match(/^urn:btih:([a-zA-Z0-9]+)$/i);
+            if (match && match[1]) {
+              hash = match[1];
+            }
+          }
+        } catch (error) {}
+        return {
+          title: item.title || "Unknown",
+          link: item.magnet || item.torrent || item.link || "",
+          hash,
+          seeders: Number(item.seeders) || 0,
+          leechers: Number(item.leechers) || 0,
+          downloads: Number(item.downloads) || 0,
+          size: Number(item.size) || 0,
+          date: item.time ? new Date(item.time) : new Date(0),
+          accuracy: item.accuracy || "low"
+        };
+      });
       return torrentResults;
     } catch (err) {
       throw new Error("Couldn't map results: " + JSON.stringify(torrents));
