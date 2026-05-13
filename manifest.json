@@ -14,5 +14,21 @@
     "icon": "https://nyaa.si/static/favicon.png",
     "update": "https://raw.githubusercontent.com/Junqor/hayase-exts/refs/heads/main/manifest.json",
     "code": "https://raw.githubusercontent.com/Junqor/hayase-exts/refs/heads/main/nyaa.js"
+  },
+  {
+    "id": "junqer.debug",
+    "name": "debug",
+    "manifestVersion": 2,
+    "deprecated": false,
+    "version": "1.0.0",
+    "type": "torrent",
+    "accuracy": "low",
+    "updatePeers": false,
+    "ratio": 0,
+    "media": "sub",
+    "languages": ["US"],
+    "icon": "https://nyaa.si/static/favicon.png",
+    "update": "https://raw.githubusercontent.com/Junqor/hayase-exts/refs/heads/main/manifest.json",
+    "code": "https://raw.githubusercontent.com/Junqor/hayase-exts/refs/heads/main/debug.js"
   }
 ]
