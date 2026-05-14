@@ -6,7 +6,7 @@
     "deprecated": false,
     "version": "1.0.0",
     "type": "torrent",
-    "accuracy": "low",
+    "accuracy": "medium",
     "updatePeers": false,
     "ratio": 0,
     "media": "sub",

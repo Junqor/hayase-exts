@@ -5,5 +5,8 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "scripts": {
+    "build": "bun build nyaa.ts --outdir ."
   }
 }

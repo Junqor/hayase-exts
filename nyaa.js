@@ -15,7 +15,8 @@ var nyaa_default = new class Nyaa {
     episode,
     fetch: fetch2
   }) {
-    const queries = titles.map((title) => fetch2(this.base + "?q=" + encodeURIComponent(title + " " + episode) + "&category=anime" + "&sub_category=eng"));
+    const englishTitles = titles.filter((t) => /[A-Za-z0-9\s\-:,'"&.!?()]+/.test(t));
+    const queries = englishTitles.map((title) => fetch2(this.base + "?q=" + encodeURIComponent(title + " " + episode) + "&category=anime" + "&sub_category=eng"));
     const results = await Promise.allSettled(queries);
     const torrents = await Promise.all(results.map(async (result) => {
       if (result.status !== "fulfilled") {

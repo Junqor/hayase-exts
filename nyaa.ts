@@ -50,7 +50,10 @@ export default new (class Nyaa {
     episode,
     fetch,
   }: AnimeQuery): Promise<TorrentResult[]> {
-    const queries = titles.map((title) =>
+    const englishTitles = titles.filter((t) =>
+      /[A-Za-z0-9\s\-:,'"&.!?()]+/.test(t),
+    );
+    const queries = englishTitles.map((title) =>
       fetch(
         this.base +
           "?q=" +
