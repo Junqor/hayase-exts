@@ -1,15 +1,13 @@
 # hayase-exts
 
-To install dependencies:
+Extensions for Hayase
 
-```bash
-bun install
+### Nyaa
+
+Import the nyaa extension:
+
+```
+https://raw.githubusercontent.com/Junqor/hayase-exts/refs/heads/main/manifest.json
 ```
 
-To run:
-
-```bash
-bun run 
-```
-
-This project was created using `bun init` in bun v1.3.14. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Thanks to [Nyaa API](https://github.com/Vivek-Kolhe/Nyaa-API)
