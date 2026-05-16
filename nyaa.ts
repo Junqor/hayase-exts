@@ -60,63 +60,62 @@ export default new (class Nyaa {
           encodeURIComponent(title + " " + episode) +
           "&category=anime" +
           "&sub_category=eng",
-      ),
+      ).then((res) => res.json()),
     );
 
     const results = await Promise.allSettled(queries);
 
-    const torrents = await Promise.all(
-      results.map(async (result) => {
-        if (result.status !== "fulfilled") {
-          return [];
-        }
+    const torrents = results.map((result) => {
+      if (result.status !== "fulfilled") {
+        return [];
+      }
+      const data = result.value;
+      // @ts-ignore
+      if (!data || !Array.isArray(data.data)) {
+        return [];
+      }
 
-        const res = result.value;
-        if (!res.ok) {
-          return [];
-        }
-
-        const data = await res.json();
-        // @ts-ignore
-        if (!data || !Array.isArray(data.data)) {
-          return [];
-        }
-
-        // @ts-ignore
-        return data.data;
-      }),
-    );
+      // @ts-ignore
+      return data.data;
+    });
 
     try {
-      const torrentResults = torrents.flat().map((item: any) => {
-        let hash = "";
-        try {
-          const url = new URL(item.magnet);
-          if (url.protocol !== "magnet:") throw new Error();
-          const xtValues = url.searchParams.getAll("xt");
+      const torrentResults = torrents
+        .flat()
+        .reduce((acc: TorrentResult[], item) => {
+          let hash = "";
+          try {
+            const url = new URL(item.magnet);
+            if (url.protocol !== "magnet:") throw new Error();
+            const xtValues = url.searchParams.getAll("xt");
 
-          for (const xt of xtValues) {
-            const match = xt.match(/^urn:btih:([a-zA-Z0-9]+)$/i);
-            if (match && match[1]) {
-              hash = match[1];
+            for (const xt of xtValues) {
+              const match = xt.match(/^urn:btih:([a-zA-Z0-9]+)$/i);
+              if (match && match[1]) {
+                hash = match[1];
+              }
             }
-          }
-        } catch (error) {}
-        return {
-          title: item.title || "Unknown",
-          link: item.magnet || item.torrent || item.link || "",
-          hash: hash,
-          seeders: Number(item.seeders) || 0,
-          leechers: Number(item.leechers) || 0,
-          downloads: Number(item.downloads) || 0,
-          size: Number(item.size) || 0,
-          date: item.time ? new Date(item.time) : new Date(0),
-          accuracy: item.accuracy || "low",
-        };
-      });
+            acc.push({
+              title: item.title || "Unknown",
+              link: item.magnet || item.torrent || item.link || "",
+              hash: hash,
+              seeders: Number(item.seeders) || 0,
+              leechers: Number(item.leechers) || 0,
+              downloads: Number(item.downloads) || 0,
+              size: Number(item.size) || 0,
+              date: item.time ? new Date(item.time) : new Date(0),
+              accuracy: "medium",
+            });
+          } catch (error) {}
+          return acc;
+        }, [])
+        .sort((a, b) => b.seeders - a.seeders);
+
       return torrentResults;
     } catch (err) {
-      throw new Error("Couldn't map results: " + JSON.stringify(torrents));
+      throw new Error(
+        "Couldn't format torrent results: " + JSON.stringify(torrents),
+      );
     }
   }
 
