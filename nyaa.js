@@ -49,7 +49,7 @@ var nyaa_default = new class Nyaa {
             seeders: Number(item.seeders) || 0,
             leechers: Number(item.leechers) || 0,
             downloads: Number(item.downloads) || 0,
-            size: Number(item.size) || 0,
+            size: this.parseSizeBytes(item.size),
             date: item.time ? new Date(item.time) : new Date(0),
             accuracy: "medium"
           });
@@ -68,6 +68,35 @@ var nyaa_default = new class Nyaa {
     } catch {
       throw new Error("Nyaa API is unavailable");
     }
+  }
+  parseSizeBytes(size) {
+    if (typeof size === "number" && Number.isFinite(size)) {
+      return size;
+    }
+    if (typeof size !== "string") {
+      return 0;
+    }
+    const match = size.trim().match(/^([0-9]+(?:\.[0-9]+)?)\s*([KMGTP]?i?B)$/i);
+    if (!match) {
+      return 0;
+    }
+    const value = Number(match[1]);
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+    const unit = match[2].toUpperCase();
+    const multipliers = {
+      B: 1,
+      KB: 1000,
+      MB: 1e6,
+      GB: 1e9,
+      TB: 1000000000000,
+      KIB: 1024,
+      MIB: 1024 ** 2,
+      GIB: 1024 ** 3,
+      TIB: 1024 ** 4
+    };
+    return Math.round(value * (multipliers[unit] ?? 0));
   }
 };
 export {
